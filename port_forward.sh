@@ -8,12 +8,12 @@ set -e
 # ==== 可选：是否自动为 FORWARD 添加放行（默认开启，设为0可关闭） ====
 ENABLE_FILTER_RULES=1
 
-RESET="\e[0m"
-RED="\e[31m"
-GREEN="\e[32m"
-YELLOW="\e[33m"
-BLUE="\e[34m"
-CYAN="\e[36m"
+RESET=$'\e[0m'
+RED=$'\e[31m'
+GREEN=$'\e[32m'
+YELLOW=$'\e[33m'
+BLUE=$'\e[34m'
+CYAN=$'\e[36m'
 
 wait_main_menu() {
   if ! read -r -p "🔁 ${CYAN}按回车返回主菜单...${RESET} " _; then
@@ -287,7 +287,7 @@ while true; do
   echo -e "📋 ${BLUE}端口转发管理菜单:${RESET}"
   echo -e "🟢 ${GREEN}1) 添加端口转发${RESET}"
   echo -e "🗑️ ${GREEN}2) 删除端口转发（成组）${RESET}"
-  echo -e "📖 ${GREEN}3) 查看当前转发规则${RESET}"
+  echo -e "📖️ ${GREEN}3) 查看当前转发规则${RESET}"
   echo -e "🚪 ${GREEN}0) 退出${RESET}"
   echo -e "${CYAN}==============================${RESET}"
   if ! read -p "📌 ${CYAN}请选择操作: ${RESET} " choice; then
