@@ -224,7 +224,7 @@ delete_rule() {
 
   echo -e "🗂️ ${BLUE}当前转发规则列表:${RESET}"
   echo "$rules" | awk -v color="$CYAN" -v reset="$RESET" '{printf "%s🔢 %d) %s%s\n", color, NR, $0, reset}'
-  if ! read -p "🗑️ ${CYAN}请输入要删除的序号: ${RESET} " num; then
+  if ! read -p "🧹 ${CYAN}请输入要删除的序号: ${RESET} " num; then
     echo -e "🟡 ${YELLOW}输入中断，取消删除。${RESET}"
     wait_main_menu
     return
@@ -273,7 +273,7 @@ delete_rule() {
   done
 
   if [[ "$removed" -eq 1 ]]; then
-    echo -e "🗑️ ${GREEN}已成组删除：A:*:$A_PORT -> $B_IP:$B_PORT (含 TCP/UDP、PREROUTING/POSTROUTING)${RESET}"
+    echo -e "🧹 ${GREEN}已成组删除：A:*:$A_PORT -> $B_IP:$B_PORT (含 TCP/UDP、PREROUTING/POSTROUTING)${RESET}"
     save_rules
   else
     echo -e "ℹ️ ${YELLOW}未找到匹配规则（可能已删除）。${RESET}"
@@ -286,7 +286,7 @@ while true; do
   echo -e "${CYAN}==============================${RESET}"
   echo -e "📋 ${BLUE}端口转发管理菜单:${RESET}"
   echo -e "🟢 ${GREEN}1) 添加端口转发${RESET}"
-  echo -e "🗑️ ${GREEN}2) 删除端口转发（成组）${RESET}"
+  echo -e "🧹 ${GREEN}2) 删除端口转发（成组）${RESET}"
   echo -e "📖️ ${GREEN}3) 查看当前转发规则${RESET}"
   echo -e "🚪 ${GREEN}0) 退出${RESET}"
   echo -e "${CYAN}==============================${RESET}"
