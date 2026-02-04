@@ -719,12 +719,18 @@ list_rules() {
   
   local idx=0
   while IFS= read -r line; do
-    ((idx++))
+    ((++idx))
     local proto a_port b_ip b_port
     proto=$(echo "$line" | awk '{print $3}')
-    a_port=$(echo "$line" | grep -oE 'dpt:[0-9]+' | sed 's/dpt://')
-    b_ip=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f2)
-    b_port=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f3)
+    a_port=$(echo "$line" | grep -oE 'dpt:[0-9]+' | sed 's/dpt://' || true)
+    b_ip=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f2 || true)
+    b_port=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f3 || true)
+    
+    # 如果解析失败，跳过该行
+    if [[ -z "$a_port" || -z "$b_ip" || -z "$b_port" ]]; then
+      ((idx--)) || true
+      continue
+    fi
     
     local domain_info=""
     if [[ -n "${domain_map[$b_ip]:-}" ]]; then
@@ -765,7 +771,7 @@ list_domain_rules() {
   local idx=0
   while IFS='|' read -r a_port a_ip domain b_port protocols current_ip; do
     [[ -z "$domain" ]] && continue
-    ((idx++))
+    ((++idx))
     printf "${GREEN}║${RESET} ${CYAN}%3d${RESET}  │ %-8s │ %-27s │ %-15s │ %-5s\n" \
       "$idx" "$a_port" "$domain" "$current_ip" "$protocols"
   done < "$DOMAIN_RULES_FILE"
@@ -818,12 +824,18 @@ delete_rule() {
   
   local idx=0
   while IFS= read -r line; do
-    ((idx++))
+    ((++idx))
     local proto a_port b_ip b_port
     proto=$(echo "$line" | awk '{print $3}')
-    a_port=$(echo "$line" | grep -oE 'dpt:[0-9]+' | sed 's/dpt://')
-    b_ip=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f2)
-    b_port=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f3)
+    a_port=$(echo "$line" | grep -oE 'dpt:[0-9]+' | sed 's/dpt://' || true)
+    b_ip=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f2 || true)
+    b_port=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f3 || true)
+    
+    # 如果解析失败，跳过该行
+    if [[ -z "$a_port" || -z "$b_ip" || -z "$b_port" ]]; then
+      ((idx--)) || true
+      continue
+    fi
     
     local domain_info=""
     if [[ -n "${domain_map[$b_ip]:-}" ]]; then
@@ -863,9 +875,9 @@ delete_rule() {
   local PROTO A_IP A_PORT B_IP B_PORT
   PROTO=$(echo "$line" | awk '{print $3}')
   A_IP=$(echo "$line" | awk '{print $6}')
-  A_PORT=$(echo "$line" | grep -oE 'dpt:[0-9]+' | sed 's/dpt://')
-  B_IP=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f2)
-  B_PORT=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f3)
+  A_PORT=$(echo "$line" | grep -oE 'dpt:[0-9]+' | sed 's/dpt://' || true)
+  B_IP=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f2 || true)
+  B_PORT=$(echo "$line" | grep -oE 'to:[0-9\.]+:[0-9]+' | cut -d':' -f3 || true)
 
   if [[ -z "$A_PORT" || -z "$B_IP" || -z "$B_PORT" ]]; then
     print_error "解析失败，无法安全删除。请将 list 的原始输出发给我协助修复。"
