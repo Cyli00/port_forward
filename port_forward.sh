@@ -317,7 +317,8 @@ validate_ipv4() {
 validate_domain() {
   local domain="$1"
   # 简单的域名验证：至少包含一个点，只包含字母、数字、点和短横线
-  [[ "$domain" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)+$ ]] || return 1
+  # 允许单字符子域名，如 a.example.com
+  [[ "$domain" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])*(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])*)+$ ]] || return 1
   return 0
 }
 
@@ -523,8 +524,12 @@ remove_cron_job() {
 check_cron_status() {
   if crontab -l 2>/dev/null | grep -q "$CRON_SCRIPT"; then
     local interval
-    interval=$(crontab -l 2>/dev/null | grep "$CRON_SCRIPT" | grep -oE '\*/[0-9]+' | sed 's/\*//')
-    print_info "域名解析定时任务已启用，间隔: ${interval} 分钟"
+    interval=$(crontab -l 2>/dev/null | grep "$CRON_SCRIPT" | grep -oE '\*/[0-9]+' | sed 's/\*\///')
+    if [[ -n "$interval" ]]; then
+      print_info "域名解析定时任务已启用，间隔: ${interval} 分钟"
+    else
+      print_info "域名解析定时任务已启用"
+    fi
     return 0
   else
     print_info "域名解析定时任务未启用"
