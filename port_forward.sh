@@ -135,7 +135,7 @@ ensure_dependencies() {
   if ! command -v iptables >/dev/null 2>&1 || ! command -v iptables-save >/dev/null 2>&1; then
     missing+=("iptables")
   fi
-  command -v conntrack >/dev/null 2>&1 || missing+=("conntrack-tools")
+  command -v conntrack >/dev/null 2>&1 || missing+=("conntrack")
   command -v netfilter-persistent >/dev/null 2>&1 || missing+=("iptables-persistent")
 
   if ((${#missing[@]} == 0)); then
@@ -911,7 +911,7 @@ delete_rule() {
         fi
       done
     else
-      print_info "未检测到 conntrack 工具（conntrack-tools 包），无法自动清理连接跟踪。"
+      print_info "未检测到 conntrack 工具（conntrack 包），无法自动清理连接跟踪。"
     fi
   fi
 
